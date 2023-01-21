@@ -1,0 +1,216 @@
+    {% extends 'layout/default.html' %}
+
+    {% block content %}
+    
+    <div class="container-fluid p-5">
+    
+        <form class="p-3" method="post" name="formulario">
+            {% csrf_token %}
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="nombre" type="text" class="form-control pt-3 pb-3" placeholder="Nombre" name="nombre" {% if accion == 'editar' %}value="{{usuario.nombre}}"{% endif %} required/>
+                </div>
+            
+                <div class="input-group mb-3">
+                    <input id="apellidos" type="text" class="form-control pt-3 pb-3" placeholder="Apellidos" name="apellidos" {% if accion == 'editar' %}value="{{usuario.apellidos}}"{% endif %} required />
+                </div>
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="correo" type="email" class="form-control pt-3 pb-3" placeholder="Correo electrónico" name="email" {% if accion == 'editar' %} disabled value="{{usuario.email}}"{% endif %} required />
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="carnet" type="text" maxlength="11" class="form-control pt-3 pb-3" placeholder="CI" name="carnet" {% if accion == 'editar' %} disabled value="{{usuario.carnet}}"{% endif %} required />
+            </div>
+    
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="pais" type="text" class="form-control pt-3 pb-3" placeholder="País" name="pais" {% if accion == 'editar' %}value="{{usuario.pais}}"{% endif %} required />
+                </div>
+    
+                <div class="input-group mb-3">
+                    <input id="titulo" type="text" class="form-control pt-3 pb-3" placeholder="Título" name="titulo" {% if accion == 'editar' %}value="{{usuario.titulo}}"{% endif %} required />
+                </div>
+            </div>
+    
+            <select class="form-select pt-3 pb-3 mb-3" name="sexo" id="selectSexo">
+                <option {% if accion == 'crear' %} selected {% endif %} value="E">Sin especificar</option>
+                <option {% if accion == 'editar' and 'M' == usuario.sexo %} selected {% endif %} value="M">Masculino</option>
+                <option {% if accion == 'editar' and 'F' == usuario.sexo %} selected {% endif %} value="F">Femenino</option>
+            </select>
+
+            <select name="roles" id="selectRoles" multiple>
+                {% for r in roles  %}
+                    <option value="{{r.name}}"
+                    {% if accion == 'editar' %}
+                        {% for g in usuario.groups.all %}
+                            {% if r.name == g.name %}
+                                selected
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    >{{r.name}}</option>
+                {% endfor %}
+            </select>
+    
+            <select class="form-select pt-3 pb-3 mt-3 mb-3" name="area" id="selectArea">
+                <option {% if accion == 'crear' %} selected {% endif %} value="">Área de trabajo</option>
+                <option {% if accion == 'editar' and 'Facultad 1' == usuario.areaTrabajo %} selected {% endif %} value="Facultad 1">Facultad 1</option>
+                <option {% if accion == 'editar' and 'Facultad 2' == usuario.areaTrabajo %} selected {% endif %} value="Facultad 2">Facultad 2</option>
+                <option {% if accion == 'editar' and 'Facultad 3' == usuario.areaTrabajo %} selected {% endif %} value="Facultad 3">Facultad 3</option>
+                <option {% if accion == 'editar' and 'Facultad 4' == usuario.areaTrabajo %} selected {% endif %} value="Facultad 4">Facultad 4</option>
+                <option {% if accion == 'editar' and 'Facultad CITEC' == usuario.areaTrabajo %} selected {% endif %} value="Facultad CITEC">Facultad CITEC</option>
+                <option {% if accion == 'editar' and 'Facultad FTE' == usuario.areaTrabajo %} selected {% endif %} value="Facultad FTE">Facultad FTE</option>
+                <option {% if accion == 'editar' and 'Dirección de Calidad de Software' == usuario.areaTrabajo %} selected {% endif %} value="Dirección de Calidad de Software">Dirección de Calidad de Software</option>
+                <option {% if accion == 'editar' and 'Dirección de Seguridad Informática' == usuario.areaTrabajo %} selected {% endif %} value="Dirección de Seguridad Informática">Dirección de Seguridad Informática</option>
+                <option {% if accion == 'editar' and 'Dirección de Informatización' == usuario.areaTrabajo %} selected {% endif %} value="Dirección de Informatización">Dirección de Informatización</option>
+                <option {% if accion == 'editar' and 'Dirección de Transferencia de tecnología' == usuario.areaTrabajo %} selected {% endif %} value="Dirección de Transferencia de tecnología">Dirección de Transferencia de tecnología</option>
+                <option {% if accion == 'editar' and 'Dirección de Producción de Software' == usuario.areaTrabajo %} selected {% endif %} value="Dirección de Producción de Software">Dirección de Producción de Software</option>
+                <option {% if accion == 'editar' and 'PPD' == usuario.areaTrabajo %} selected {% endif %} value="PPD">PPD</option>
+                <option {% if accion == 'editar' and 'Extranjero' == usuario.areaTrabajo %} selected {% endif %} value="Extranjero">Extranjero</option>
+                <option {% if accion == 'editar' and 'Externo' == usuario.areaTrabajo %} selected {% endif %} value="Externo">Externo</option>
+            </select>
+    
+            {% if accion == 'crear' %}
+                <div class="input-group">
+                    <input type="password" class="form-control pt-3 pb-3" placeholder="Contraseña" aria-describedby="basic-addon1" id="password" name="password" required>
+                    <span class="input-group-text"  id="basic-addon1">
+                        <span class="material-symbols-rounded" style="cursor: pointer;" id="pass_visibility">visibility</span>
+                    </span>
+                </div>
+            {% endif %}
+            {%if accion == 'editar'%}
+            <span class="d-none" style="cursor: pointer;" id="pass_visibility">visibility</span>
+            {%endif%}
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" value="true" id="checkCasado" name="casado" {% if accion == 'editar' and usuario.is_casado %} checked {% endif %}>
+                <label class="form-check-label" for="flexCheckDefault">
+                    Casado
+                </label>
+            </div>
+
+            
+        </form>
+        <div class="d-flex p-3">
+    
+            <button id="btn_enviar" class="btn btn-success pt-2 pb-2 me-2 ms-auto" style="min-width: 100px;">
+                {% if accion == 'crear' %}
+                    Registrar
+                {% elif accion == 'editar' %}
+                    Modificar
+                {% endif %}
+            </button>
+    
+            <a class="btn btn-danger pt-2 pb-2" style="min-width: 100px;" href="{% url 'admin_user' %}">Cancelar</a>
+    
+        </div>
+
+    </div>
+
+    <p class="visually-hidden" id="error">{{error}}</p> <!--Lanzar el error-->
+    
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+
+    <script>
+    
+        new MultiSelectTag('selectRoles');
+    
+
+        if(error.innerHTML != ""){
+            alert(error.innerHTML);
+        };//Muestra el error
+
+        btn_enviar.addEventListener("click", ()=>{
+            if(nombre.value != "" && apellidos.value != "" && correo.value != "" && carnetValido() && pais.value != "" && titulo.value != "" && selectArea.value != ""){
+                if(!correo.value.includes("@uci.cu")){
+                    alert("El correo electrónico no es válido");
+                }else{
+                    document.formulario.submit();
+                }
+                
+            }else{
+                alert("Campos obligatorios vacíos");
+            }
+        });
+    
+        carnetValido = ()=>{
+            if(carnet.value.length == 11){
+                return true;
+            }else{
+                return false;
+            }
+        };
+       
+        pass_visibility.addEventListener("click", ()=>{
+            if(pass_visibility.innerHTML == "visibility"){
+                pass_visibility.innerHTML = 'visibility_off';
+                password.type = 'text';
+            }else{
+                pass_visibility.innerHTML = 'visibility';
+                password.type = 'password';
+            }
+        });
+    
+        window.addEventListener('load', ()=>{
+            if(error.innerHTML != ""){
+                alert(error.innerHTML);
+            }
+        });
+
+        carnet.addEventListener("input", ()=>{
+            let text = carnet.value;
+            let pattern = /[^0-9]/i;
+            if(pattern.test(text)){
+                var x = carnet.value 
+                x = x.substring(0, x.length - 1);
+                carnet.value = x
+            }
+        });
+
+        nombre.addEventListener("input", ()=>{
+            let text = nombre.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = nombre.value 
+                x = x.substring(0, x.length - 1);
+                nombre.value = x
+            }
+        });
+        
+        
+        apellidos.addEventListener("input", ()=>{
+            let text = apellidos.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = apellidos.value 
+                x = x.substring(0, x.length - 1);
+                apellidos.value = x
+            }
+        });
+
+        pais.addEventListener("input", ()=>{
+            let text = pais.value;
+            let pattern = /[^a-zA-ZÀ-ÿ]/i;
+            if(pattern.test(text)){
+                var x = pais.value 
+                x = x.substring(0, x.length - 1);
+                pais.value = x
+            }
+        });
+
+        titulo.addEventListener("input", ()=>{
+            let text = titulo.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = titulo.value 
+                x = x.substring(0, x.length - 1);
+                titulo.value = x
+            }
+        });
+
+
+    </script>
+    
+    {% endblock  %}
+    

@@ -1,0 +1,177 @@
+{% extends 'layout/default.html' %}
+
+    {% block content %}
+    
+    <div class="container-fluid p-5">
+
+        {% load user_tags %}
+
+        <form class="p-3" method="post" name="formulario">
+            {% csrf_token %}
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="nombre" type="text" class="form-control pt-3 pb-3" value="{{doctorando.user.nombre}}" placeholder="Nombre" name="nombre" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %}  required/>
+                </div>
+            
+                <div class="input-group mb-3">
+                    <input id="apellidos" type="text" class="form-control pt-3 pb-3" placeholder="Apellidos"  value="{{doctorando.user.apellidos}}" name="apellidos" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %} required />
+                </div>
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="correo" type="email" class="form-control pt-3 pb-3" placeholder="Correo electrónico" name="email" value="{{doctorando.user.email}}" pattern="[a-z0-9._%+-]+@[a-z0-9. - ] +\.[a-z]{2, 4}$" disabled required />
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="carnet" type="text" maxlength="11" class="form-control pt-3 pb-3" placeholder="CI" name="carnet" value="{{doctorando.user.carnet}}" disabled required />
+            </div>
+    
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="pais" type="text" class="form-control pt-3 pb-3" placeholder="País" name="pais"  value="{{doctorando.user.pais}}" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %} required />
+                </div>
+    
+                <div class="input-group mb-3">
+                    <input id="titulo" type="text" class="form-control pt-3 pb-3" placeholder="Título" value="{{doctorando.user.titulo}}" name="titulo" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %}  required />
+                </div>
+            </div>
+    
+            <select class="form-select pt-3 pb-3 mb-3" name="sexo" id="selectSexo" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %}>
+                <option {% if doctorando.user.sexo == 'E' %}selected{% endif %} value="E">Sin especificar</option>
+                <option {% if doctorando.user.sexo == 'M' %}selected{% endif %} value="M">Masculino</option>
+                <option {% if doctorando.user.sexo == 'F' %}selected{% endif %} value="F">Femenino</option>
+            </select>
+    
+            <select class="form-select pt-3 pb-3 mb-3" name="area" id="selectArea" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %}>
+                <option value="">Área de trabajo</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad 1' %}selected{% endif %} value="Facultad 1">Facultad 1</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad 2' %}selected{% endif %} value="Facultad 2">Facultad 2</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad 3' %}selected{% endif %} value="Facultad 3">Facultad 3</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad 4' %}selected{% endif %} value="Facultad 4">Facultad 4</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad CITEC' %}selected{% endif %} value="Facultad CITEC">Facultad CITEC</option>
+                <option {% if doctorando.user.areaTrabajo == 'Facultad FTE' %}selected{% endif %} value="Facultad FTE">Facultad FTE</option>
+                <option {% if doctorando.user.areaTrabajo == 'Dirección de Calidad de Software' %}selected{% endif %} value="Dirección de Calidad de Software">Dirección de Calidad de Software</option>
+                <option {% if doctorando.user.areaTrabajo == 'Dirección de Seguridad Informática' %}selected{% endif %} value="Dirección de Seguridad Informática">Dirección de Seguridad Informática</option>
+                <option {% if doctorando.user.areaTrabajo == 'Dirección de Informatización' %}selected{% endif %} value="Dirección de Informatización">Dirección de Informatización</option>
+                <option {% if doctorando.user.areaTrabajo == 'Dirección de Transferencia de tecnología' %}selected{% endif %} value="Dirección de Transferencia de tecnología">Dirección de Transferencia de tecnología</option>
+                <option {% if doctorando.user.areaTrabajo == 'Dirección de Producción de Software' %}selected{% endif %} value="Dirección de Producción de Software">Dirección de Producción de Software</option>
+                <option {% if doctorando.user.areaTrabajo == 'PPD' %}selected{% endif %} value="PPD">PPD</option>
+                <option {% if doctorando.user.areaTrabajo == 'Extranjero' %}selected{% endif %} value="Extranjero">Extranjero</option>
+                <option {% if doctorando.user.areaTrabajo == 'Externo' %}selected{% endif %} value="Externo">Externo</option>
+            </select>
+
+            <select class="form-select pt-3 pb-3 mb-3" name="tutor" id="selectTutor">
+                <option value="">Tutor</option>
+                {% for d in doctores  %}
+                    <option {% if d.id == doctorando.tutor.id %}selected{% endif %} value="{{d.id}}">{{d.nombre}} {{d.apellidos}} ({{d.email}})</option>
+                {% endfor %}
+            </select>
+
+            <select class="form-select pt-3 pb-3 mb-3" name="tesis" id="selectTesis">
+                <option value="">Seleccionar tipo de tesis</option>
+                <option {% if doctorando.tipoTesis == 'Investigación' %}selected{% endif %} value="Investigación">Investigación</option>
+                <option {% if doctorando.tipoTesis == 'Ciclo Completo' %}selected{% endif %} value="Ciclo Completo">Ciclo Completo</option>
+            </select>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox"  id="checkCasado" name="casado" {% if not request.user|has_perm:"myapp.change_usuario" %}disabled{% endif %} {% if doctorando.user.is_casado %}checked{% endif %} value="true">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Casado
+                </label>
+            </div>
+
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" id="checkMaster" name="master" {% if doctorando.is_master %}checked{% endif %} value="true">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Máster
+                </label>
+            </div>
+            
+    
+        </form>
+        
+        <div class="d-flex p-3">
+    
+            <button id="btn_enviar" class="btn btn-success pt-2 pb-2 me-2 ms-auto" style="min-width: 100px;">
+               Modificar
+            </button>
+    
+            <a class="btn btn-danger pt-2 pb-2" style="min-width: 100px;" href="{% url 'view_doctorandos' %}">Cancelar</a>
+    
+        </div>
+    
+        
+    
+    </div>
+
+    <script>
+    
+        btn_enviar.addEventListener("click", ()=>{
+            if(nombre.value != "" && apellidos.value != "" && correo.value != "" && pais.value != "" && titulo.value != "" && selectArea.value != "" && selectTesis.value != "" && selectTutor.value != ""){
+                document.formulario.submit();
+            }else if(!correo.value.includes("@uci.cu")){
+                alert("El correo electrónico no es válido");
+            }else{
+                alert("Campos obligatorios vacíos");
+            }
+        });
+
+        window.addEventListener('load', ()=>{
+            if(error.innerHTML != ""){
+                alert(error.innerHTML);
+            }
+        });
+
+        carnet.addEventListener("input", ()=>{
+            let text = carnet.value;
+            let pattern = /[^0-9]/i;
+            if(pattern.test(text)){
+                carnet.value = "";
+            }
+        });
+
+        nombre.addEventListener("input", ()=>{
+            let text = nombre.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = nombre.value 
+                x = x.substring(0, x.length - 1);
+                nombre.value = x
+            }
+        });
+        
+        
+        apellidos.addEventListener("input", ()=>{
+            let text = apellidos.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = apellidos.value 
+                x = x.substring(0, x.length - 1);
+                apellidos.value = x
+            }
+        });
+
+        pais.addEventListener("input", ()=>{
+            let text = pais.value;
+            let pattern = /[^a-zA-ZÀ-ÿ]/i;
+            if(pattern.test(text)){
+                var x = pais.value 
+                x = x.substring(0, x.length - 1);
+                pais.value = x
+            }
+        });
+
+        titulo.addEventListener("input", ()=>{
+            let text = titulo.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = titulo.value 
+                x = x.substring(0, x.length - 1);
+                titulo.value = x
+            }
+        });
+    
+    </script>
+
+    
+{% endblock  %}

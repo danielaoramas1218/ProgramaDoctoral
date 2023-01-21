@@ -1,0 +1,51 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-5">
+
+    <form class="p-3" method="post" name="formulario">
+        {% csrf_token %}
+
+        <div class="input-group mb-3">
+            <input type="password" class="form-control pt-3 pb-3" placeholder="Nueva contraseña" aria-describedby="basic-addon1" id="pass1" name="pass1" required>
+            <span class="input-group-text"  id="basic-addon1">
+                <span class="material-symbols-rounded" style="cursor: pointer;" id="pass_visibility1">visibility</span>
+            </span>
+        </div>
+
+        <div class="input-group mb-3">
+            <input type="password" class="form-control pt-3 pb-3" placeholder="Repetir nueva contraseña" aria-describedby="basic-addon2" id="pass2" name="pass2" required>
+            <span class="input-group-text"  id="basic-addon2">
+                <span class="material-symbols-rounded" style="cursor: pointer;" id="pass_visibility2">visibility</span>
+            </span>
+        </div>
+
+    </form>
+
+    <div class="d-flex p-3">
+    
+        <button id="btn_enviar" class="btn btn-success pt-2 pb-2 ms-auto" style="min-width: 100px;">Cambiar</button>
+
+    </div>
+
+</div>
+
+<script>
+
+    btn_enviar.addEventListener("click", ()=>{
+        if(pass1.value != "" && pass2.value != ""){
+            if(pass1.value == pass2.value){
+                document.formulario.submit();
+            }else{
+                alert("Los campos no coinciden");
+            }
+        }else{
+            alert("Campos obligatorios vacíos");
+        }
+    });
+    
+
+</script>
+
+{% endblock  %}

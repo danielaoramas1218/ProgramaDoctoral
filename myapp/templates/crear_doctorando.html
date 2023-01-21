@@ -1,0 +1,214 @@
+{% extends 'layout/default.html' %}
+
+    {% block content %}
+    
+    <div class="container-fluid p-5">
+
+        <form class="p-3" method="post" name="formulario">
+            {% csrf_token %}
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="nombre" type="text" class="form-control pt-3 pb-3" placeholder="Nombre" name="nombre"  required/>
+                </div>
+            
+                <div class="input-group mb-3">
+                    <input id="apellidos" type="text" class="form-control pt-3 pb-3" placeholder="Apellidos" name="apellidos" required />
+                </div>
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="correo" type="email" class="form-control pt-3 pb-3" placeholder="Correo electrónico" name="email"  required />
+            </div>
+
+            <div class="input-group mb-3">
+                <input type="password" class="form-control pt-3 pb-3" placeholder="Contraseña" aria-describedby="basic-addon1" id="password" name="password" required>
+                <span class="input-group-text"  id="basic-addon1">
+                    <span class="material-symbols-rounded" style="cursor: pointer;" id="pass_visibility">visibility</span>
+                </span>
+            </div>
+    
+            <div class="input-group mb-3">
+                <input id="carnet" type="text" maxlength="11" class="form-control pt-3 pb-3" placeholder="CI" name="carnet" required />
+            </div>
+    
+            <div class="d-flex">
+                <div class="input-group mb-3 me-2">
+                    <input id="pais" type="text" class="form-control pt-3 pb-3" placeholder="País" name="pais" required />
+                </div>
+    
+                <div class="input-group mb-3">
+                    <input id="titulo" type="text" class="form-control pt-3 pb-3" placeholder="Título" name="titulo"  required />
+                </div>
+            </div>
+    
+            <select class="form-select pt-3 pb-3 mb-3" name="sexo" id="selectSexo">
+                <option selected value="E">Sin especificar</option>
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+            </select>
+    
+            <select class="form-select pt-3 pb-3 mb-3" name="area" id="selectArea">
+                <option selected value="">Área de trabajo</option>
+                <option value="Facultad 1">Facultad 1</option>
+                <option value="Facultad 2">Facultad 2</option>
+                <option value="Facultad 3">Facultad 3</option>
+                <option value="Facultad 4">Facultad 4</option>
+                <option value="Facultad CITEC">Facultad CITEC</option>
+                <option value="Facultad FTE">Facultad FTE</option>
+                <option value="Dirección de Calidad de Software">Dirección de Calidad de Software</option>
+                <option value="Dirección de Seguridad Informática">Dirección de Seguridad Informática</option>
+                <option value="Dirección de Informatización">Dirección de Informatización</option>
+                <option value="Dirección de Transferencia de tecnología">Dirección de Transferencia de tecnología</option>
+                <option value="Dirección de Producción de Software">Dirección de Producción de Software</option>
+                <option value="PPD">PPD</option>
+                <option value="Extranjero">Extranjero</option>
+                <option value="Externo">Externo</option>
+            </select>
+
+            <select class="form-select pt-3 pb-3 mb-3" name="tutor" id="selectTutor">
+                <option selected value="">Tutor</option>
+                {% for d in doctores  %}
+                    <option value="{{d.id}}">{{d.nombre}} {{d.apellidos}} ({{d.email}})</option>
+                {% endfor %}
+            </select>
+
+            <select class="form-select pt-3 pb-3 mb-3" name="tesis" id="selectTesis">
+                <option selected value="">Seleccionar tipo de tesis</option>
+                <option value="Investigación">Investigación</option>
+                <option value="Ciclo Completo">Ciclo Completo</option>
+            </select>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" value="true" id="checkCasado" name="casado">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Casado
+                </label>
+            </div>
+
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" value="true" id="checkMaster" name="master">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Máster
+                </label>
+            </div>
+
+    
+        </form>
+    
+
+        <div class="d-flex p-3">
+    
+            <button id="btn_enviar" class="btn btn-success pt-2 pb-2 me-2 ms-auto" style="min-width: 100px;">
+                Registrar
+            </button>
+    
+            <a class="btn btn-danger pt-2 pb-2" style="min-width: 100px;" href="{% url 'view_doctorandos' %}">Cancelar</a>
+    
+        </div>
+        
+    
+    </div>
+
+    <p class="visually-hidden" id="error">{{error}}</p> <!--Lanzar el error-->
+    
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+
+
+    <script>
+
+        if(error.innerHTML != ""){
+            alert(error.innerHTML);
+        };
+    
+        btn_enviar.addEventListener("click", ()=>{
+            if(nombre.value != "" && apellidos.value != "" && correo.value != "" && carnetValido() && pais.value != "" && titulo.value != "" && selectArea.value != "" && selectTesis.value != "" && selectTutor.value != ""){
+                if(!correo.value.includes("@uci.cu")){
+                    alert("El correo electrónico no es válido");
+                }else{
+                    document.formulario.submit();
+                }
+                
+            }else{
+                alert("Campos obligatorios vacíos");
+            }
+        });
+    
+        carnetValido = ()=>{
+            if(carnet.value.length == 11){
+                return true;
+            }else{
+                return false;
+            }
+        };
+    
+        pass_visibility.addEventListener("click", ()=>{
+            if(pass_visibility.innerHTML == "visibility"){
+                pass_visibility.innerHTML = 'visibility_off';
+                password.type = 'text';
+            }else{
+                pass_visibility.innerHTML = 'visibility';
+                password.type = 'password';
+            }
+        });
+    
+        window.addEventListener('load', ()=>{
+            if(error.innerHTML != ""){
+                alert(error.innerHTML);
+            }
+        });
+
+        carnet.addEventListener("input", ()=>{
+            let text = carnet.value;
+            let pattern = /[^0-9]/i;
+            if(pattern.test(text)){
+                var x = carnet.value 
+                x = x.substring(0, x.length - 1);
+                carnet.value = x
+            }
+        });
+
+        nombre.addEventListener("input", ()=>{
+            let text = nombre.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = nombre.value 
+                x = x.substring(0, x.length - 1);
+                nombre.value = x
+            }
+        });
+        
+        
+        apellidos.addEventListener("input", ()=>{
+            let text = apellidos.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = apellidos.value 
+                x = x.substring(0, x.length - 1);
+                apellidos.value = x
+            }
+        });
+
+        pais.addEventListener("input", ()=>{
+            let text = pais.value;
+            let pattern = /[^a-zA-ZÀ-ÿ]/i;
+            if(pattern.test(text)){
+                var x = pais.value 
+                x = x.substring(0, x.length - 1);
+                pais.value = x
+            }
+        });
+
+        titulo.addEventListener("input", ()=>{
+            let text = titulo.value;
+            let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+            if(pattern.test(text)){
+                var x = titulo.value 
+                x = x.substring(0, x.length - 1);
+                titulo.value = x
+            }
+        });
+
+    
+    </script>
+    
+    {% endblock  %}

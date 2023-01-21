@@ -1,0 +1,69 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-5">
+
+    <div class="container-fluid d-flex">
+
+        {% load user_tags %}
+        {% if request.user|has_perm:"auth.add_permission" %}
+            <a class="btn btn-primary pt-2 pb-2 me-2 ms-auto" href="{% url 'crear_permisos' %}">
+                <div class="d-flex">
+                    <span class="material-symbols-rounded text-light me-2">add_box</span>
+                    Registrar Permiso
+                </div>
+            </a>
+        {% endif %}
+
+    </div>
+
+    <div class="container-fluid mt-4">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Código</th>
+                <th scope="col">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for p in permisos  %}
+                    <tr>
+                        <th  class="pt-3 pb-3">{{p.name}}</th>
+                        <td  class="pt-3 pb-3">{{p.content_type}}</td>
+                        <td  class="pt-3 pb-3">{{p.codename}}</td>
+                        <td  class="pt-3 pb-3">
+                            <div class="d-flex justify-content-center">             
+                                {% if request.user|has_perm:"auth.delete_permission" %}
+                                    <a onclick="eliminar(event, '{% url 'eliminar_permisos' p.codename %}');" href="{% url 'eliminar_permisos' p.codename %}"><span class="material-symbols-rounded text-dark"  style="cursor: pointer;">delete</span></a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    eliminar= (event, url)=>{
+        event.preventDefault();
+        if(confirm('¿Está seguro que desea eliminar este permiso?')){
+            window.location = url;
+        }
+    };
+
+
+    
+
+</script>
+
+{% endblock  %}

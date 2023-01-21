@@ -1,0 +1,42 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+    {% load user_tags %}
+    {% if request.user|is_doctorando %}
+
+    <div class="container-fluid p-5">
+
+        <h2 class="fw-bolder text-uppercase mb-5">Mi información</h2>
+
+        <div class="card border-1 bg-light p-5">
+            
+            <h6 class="fw-semibold text-dark mb-3"><strong>Nombre:</strong> {{user.nombre}} {{user.apellidos}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Correo electrónico:</strong> {{user.email}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>CI:</strong> {{user.carnet}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>País:</strong> {{user.pais}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Título:</strong> {{user.titulo}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Área de Trabajo:</strong> {{user.areaTrabajo}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Sexo:</strong> {{user.sexo}}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Casado:</strong> {% if user.is_casado %} Si {% else %} No {% endif %}</h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Tipo de Tesis:</strong> {{request.user|getTipoTesis}} </h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Máster:</strong> {{request.user|isMaster}} </h6>
+
+            <h6 class="fw-semibold text-dark mb-3"><strong>Tutor:</strong> {{request.user|getTutor}} </h6>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+{% endblock  %}

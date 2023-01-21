@@ -1,0 +1,92 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-5">
+
+    {% load user_tags %}
+    {% if request.user|has_perm:"auth.add_group" %}
+        <div class="container-fluid d-flex">
+
+            <form method="post" name="formulario" class="me-auto w-100">
+                {% csrf_token %}
+                <div class="mb-3 w-100">
+                    <input id="nombre" type="text" class="form-control pt-2 pb-2 w-100" id="nombre_rol" placeholder="Nombre del rol" name="nombre" required>
+                </div>
+
+            </form>
+
+            <div class="d-flex ms-2">
+                <button id="btn_add" class="btn btn-primary" style="width: 150px; height: 42px;">Registrar</button>
+            </div>
+
+        </div>
+    {% endif %}
+    
+    <div class="container-fluid mt-4">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Opciones</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for r in roles  %}
+
+                    <tr>
+                        <th  class="pt-3 pb-3">{{r.name}}</th>
+                        <td  class="pt-3 pb-3">
+                            <div class="d-flex justify-content-start">
+
+                                {% if request.user|has_perm:"auth.change_group" %}
+                                    <a href="{% url 'permisos_roles' r.name %}"><span class="material-symbols-rounded text-dark me-2">edit</span></a>
+                                {% endif %}
+
+                                {% if request.user|has_perm:"auth.delete_group" %}
+                                    <a onclick="eliminar(event, '{% url 'eliminar_rol' r.name %}');" href="{% url 'eliminar_rol' r.name %}"><span class="material-symbols-rounded text-dark">delete</span></a>
+                                {% endif %}
+
+                            </div>
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    btn_add.addEventListener("click", ()=>{
+        if(nombre_rol.value != ""){
+            document.formulario.submit();
+        }else{
+            alert("Campos obligatorios vacíos");
+        }
+    });
+
+    nombre.addEventListener("input", ()=>{
+        let text = nombre.value;
+        let pattern = /[^a-zA-ZÀ-ÿ ]/i;
+        if(pattern.test(text)){
+            var x = nombre.value 
+            x = x.substring(0, x.length - 1);
+            nombre.value = x
+        }
+    });
+
+    eliminar= (event, url)=>{
+        event.preventDefault();
+        if(confirm('¿Está seguro que desea eliminar este rol?')){
+            window.location = url;
+        }
+    };
+
+</script>
+
+{% endblock  %}

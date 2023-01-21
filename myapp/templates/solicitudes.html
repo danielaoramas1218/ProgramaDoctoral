@@ -1,0 +1,92 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-5">
+
+    <div class="container-fluid d-flex">
+
+        <form method="post" name="formulario" class="me-auto w-100">
+            {% csrf_token %}
+            <div class="mb-3 w-100">
+               <input type="text" class="form-control pt-2 pb-2 w-100" id="campo_busqueda" placeholder="Buscar por correo electrónico..." name="keywords" required>
+            </div>
+
+        </form>
+
+        <div class="d-flex ms-2">
+            <button id="btn_add" class="btn btn-primary" style="width: 150px; height: 42px;">Buscar</button>
+        </div>
+
+    </div>
+    
+    
+    <div class="container-fluid mt-3">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+            <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Carnet</th>
+                <th scope="col">País</th>
+                <th scope="col">Título</th>
+                <th scope="col">Área de Trabajo</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for s in solicitudes  %}
+
+                    <tr>
+                        <th  class="pt-3 pb-3">{{s.user.email}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.nombre}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.apellidos}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.carnet}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.pais}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.titulo}}</th>
+                        <th  class="pt-3 pb-3">{{s.user.areaTrabajo}}</th>
+                        <td  class="pt-3 pb-3">
+                            {% if s.estado == "P" %}
+                                <div class="d-flex justify-content-center">
+                                    <a href="{% url 'aceptar_solicitud' s.user_id %}" class="text-success text-decoration-none">Aceptar</a>
+                                </div>
+                            {% else %}
+                                <span class="text-danger">Denegada</span>
+                            {% endif %}
+                        </td>
+                        <td  class="pt-3 pb-3">
+                            {% if s.estado == "P" %}
+                                <div class="d-flex justify-content-center">
+                                    <a onclick="denegar(event, '{% url 'denegar_solicitud' s.user_id %}');" href="{% url 'denegar_solicitud' s.user_id %}" class="text-danger text-decoration-none">Denegar</a>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    btn_add.addEventListener("click", ()=>{
+        document.formulario.submit();
+    });
+
+    denegar= (event, url)=>{
+        event.preventDefault();
+        if(confirm('¿Está seguro que desea denegar esta solicitud?')){
+            window.location = url;
+        }
+    };
+
+</script>
+
+{% endblock  %}

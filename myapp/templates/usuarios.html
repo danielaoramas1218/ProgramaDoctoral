@@ -1,0 +1,108 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+
+
+<div class="container-fluid p-5">
+ 
+    <div class="container-fluid d-flex align-items-center">
+
+        <form method="post" name="formulario" class="d-flex">
+            {% csrf_token %}
+            <div class="mb-3 w-100">
+               <input type="text" class="form-control pt-2 pb-2 w-100" id="campo_busqueda" placeholder="Buscar por correo electrónico..." name="keywords" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary ms-2" style="width: 200px; height: 42px;">Buscar</button>
+        </form>
+
+        {% load user_tags %}
+            {% if request.user|has_perm:"myapp.add_usuario" %}
+                <a class="btn btn-primary pt-2 pb-2 me-2 ms-auto" href="{% url 'crear_usuario' %}">
+                    <div class="d-flex">
+                        <span class="material-symbols-rounded text-light me-2">person_add</span>
+                        Registrar Usuario
+                    </div>
+                </a>
+            {% endif %}
+    </div>
+
+    <div class="container-fluid mt-4">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+              <tr>
+                <th scope="col">Correo electrónico</th>
+                <th scope="col">Nombre completo</th>
+                <th scope="col">CI</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios  %}
+
+                    <tr>
+                        <th  class="pt-3 pb-3">{{u.email}}</th>
+                        <td  class="pt-3 pb-3">{{u.nombre}} {{u.apellidos}}</td>
+                        <td  class="pt-3 pb-3">{{u.carnet}}</td>
+                        <td  class="pt-3 pb-3">
+                            <div class="container">
+                                {% if u.is_superuser %}
+                                    <div class="badge bg-danger text-wrap p-2 mb-1">
+                                        Superadmin
+                                    </div>
+                                {% endif %}
+                                {% if u.cuenta == 1 %}
+                                    <div class="badge bg-success text-wrap p-2 mb-1">
+                                        Solicitante
+                                    </div>
+                                {% endif %}
+                                {% if u.cuentaD == 1 %}
+                                    <div class="badge bg-warning text-wrap p-2 mb-1">
+                                        Doctorando
+                                    </div>
+                                {% endif %}
+                                {% for g in u.groups.all %}
+                                    <div class="badge bg-primary text-wrap p-2 mb-1">
+                                        {{g.name}}
+                                    </div>
+                                {% endfor %} 
+                            </div>
+                        </td>
+                        <td  class="pt-3 pb-3">
+                            <div class="d-flex justify-content-center">             
+                                {% if request.user|has_perm:"myapp.change_usuario" %}
+                                    <a href="{% url 'editar_usuario' u.id %}"><span class="material-symbols-rounded text-dark me-2">edit</span></a>
+                                {% endif %}
+                                {% if request.user|has_perm:"myapp.delete_usuario" %}
+                                    <a onclick="eliminar(event, '{% url 'eliminar_usuario' u.id %}');" href="{% url 'eliminar_usuario' u.id %}"><span class="material-symbols-rounded text-dark me-2">delete</span></a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+
+    
+
+    eliminar= (event, url)=>{
+        event.preventDefault();
+        if(confirm('¿Está seguro que desea eliminar este usuario?')){
+            window.location = url;
+        }
+    };
+
+</script>
+
+{% endblock  %}

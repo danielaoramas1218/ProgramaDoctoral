@@ -1,0 +1,219 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+    <main>
+
+        <div class="d-flex mt-5 align-items-center">
+
+            <div class="form-check ms-auto">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onchange="actualizar_opciones('doctorando')">
+                <label class="form-check-label" for="flexRadioDefault1">
+                    Doctorando
+                </label>
+              </div>
+              <div class="form-check ms-4">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onchange="actualizar_opciones('doctor')">
+                <label class="form-check-label" for="flexRadioDefault2">
+                    Doctor
+                </label>
+              </div>
+              <div class="form-check ms-4">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" onchange="actualizar_opciones('solicitante')">
+                <label class="form-check-label" for="flexRadioDefault3">
+                    Solicitante
+                </label>
+              </div>
+        </div>
+
+        <div id="solicitante" class="container-fluid mt-5 p-3"> <!--Opcion Solicitante-->
+
+            <div class="d-flex mt-5">
+                <div class="d-flex ms-2">
+                    <strong>Inicio: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="SfechaInicio" required>
+                </div>
+    
+                <div class="d-flex ms-3">
+                    <strong>Fin: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="SfechaFin" required>
+                </div>
+            </div>
+
+            <div class="d-flex mt-5">
+                <button type="button" class="btn btn-primary ms-auto" onclick="get_solicitantes()">Generar Reporte</button>
+            </div>
+
+        </div>
+
+        <div id="doctor" class="container-fluid mt-5 p-3"> <!--Opcion Doctor-->
+
+            <div class="d-flex mt-5">
+                <div class="d-flex ms-2">
+                    <strong>Inicio: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="DfechaInicio" required>
+                </div>
+    
+                <div class="d-flex ms-3">
+                    <strong>Fin: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="DfechaFin" required>
+                </div>
+            </div>
+
+            <select class="form-select pt-2 pb-2 mt-5" name="area" id="selectArea">
+                <option selected value="">Área de trabajo</option>
+                <option value="Facultad 1">Facultad 1</option>
+                <option value="Facultad 2">Facultad 2</option>
+                <option value="Facultad 3">Facultad 3</option>
+                <option value="Facultad 4">Facultad 4</option>
+                <option value="Facultad CITEC">Facultad CITEC</option>
+                <option value="Facultad FTE">Facultad FTE</option>
+                <option value="Dirección de Calidad de Software">Dirección de Calidad de Software</option>
+                <option value="Dirección de Seguridad Informática">Dirección de Seguridad Informática</option>
+                <option value="Dirección de Informatización">Dirección de Informatización</option>
+                <option value="Dirección de Transferencia de tecnología">Dirección de Transferencia de tecnología</option>
+                <option value="Dirección de Producción de Software">Dirección de Producción de Software</option>
+                <option value="PPD">PPD</option>
+                <option value="Extranjero">Extranjero</option>
+                <option value="Externo">Externo</option>
+            </select>
+
+            <div class="d-flex mt-5">
+                <button type="button" class="btn btn-primary ms-auto" onclick="get_doctor()">Generar Reporte</button>
+            </div>
+
+        </div>
+
+
+        <div id="doctorando" class="container-fluid mt-5 p-3"> <!--Opcion Doctorando-->
+
+            <div class="d-flex mt-5">
+                <div class="d-flex ms-2">
+                    <strong>Inicio: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="CfechaInicio" required>
+                </div>
+    
+                <div class="d-flex ms-3">
+                    <strong>Fin: </strong>
+                    <input type="date" class="form-control ms-2" style="width: 200px;" id="CfechaFin" required>
+                </div>
+            </div>
+
+            <select class="form-select pt-2 pb-2 mt-5" name="tesis" id="selectTesis">
+                <option selected value="">Seleccionar tipo de tesis</option>
+                <option value="Investigación">Investigación</option>
+                <option value="Ciclo Completo">Ciclo Completo</option>
+            </select>
+
+            <div class="d-flex mt-5">
+                <button type="button" class="btn btn-primary ms-auto" onclick="get_doctorando()">Generar Reporte</button>
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+    <script type="text/javascript">
+
+        actualizar_opciones = (select) =>{
+            solicitante.classList.add('visually-hidden');
+            doctor.classList.add('visually-hidden');
+            doctorando.classList.add('visually-hidden');
+
+            switch(select){
+                case "solicitante":
+                    solicitante.classList.remove('visually-hidden');
+                    break;
+                case "doctor":
+                    doctor.classList.remove('visually-hidden');
+                    break;
+                case "doctorando":
+                    doctorando.classList.remove('visually-hidden');
+                    break;
+            }
+        };
+
+        window.addEventListener("load", ()=>{
+            actualizar_opciones("");
+        });
+
+        const get_solicitantes = async ()=>{
+            try{
+
+                const response = await fetch(`solicitantes/${SfechaInicio.value}/${SfechaFin.value}/`);
+                const data = await response.json();
+
+                var texto = "";
+
+                data.solicitantes.forEach((s)=>{
+                    texto += s.nombre +" "+ s.apellidos +" "+s.carnet +" "+s.pais +" "+s.titulo +" "+s.areaTrabajo +" "+s.sexo + "\n";
+                });
+
+                guardarArchivoDeTexto(texto, "reporteSolcitantes.txt");
+
+            }catch(e){
+                alert("Campos obligatorios vacíos")
+                console.log(e);
+            }
+
+        
+
+        };
+
+        
+        const get_doctorando = async ()=>{
+            try{
+
+                const response = await fetch(`doctorando/${DfechaInicio.value}/${DfechaFin.value}/${selectTesis.value}/`);
+                const data = await response.json();
+
+                var texto = "";
+
+                data.doctorando.forEach((d)=>{
+                    texto += d.nombre +" "+ d.apellidos +" "+d.carnet +" "+d.pais +" "+d.titulo +" "+d.areaTrabajo +" "+d.sexo +" "+d.tutor + "\n";
+                });
+
+                guardarArchivoDeTexto(texto, "reporteDoctorando.txt");
+
+            }catch(e){
+                alert("Campos obligatorios vacíos")
+                console.log(e);
+            }
+        };  
+        
+        
+        const get_doctor = async ()=>{
+            try{
+
+                const response = await fetch(`doctor/${CfechaInicio.value}/${CfechaFin.value}/${selectArea.value}/`);
+                const data = await response.json();
+
+                var texto = "";
+
+                data.doctor.forEach((d)=>{
+                    texto += d.nombre +" "+ d.apellidos +" "+d.carnet +" "+d.pais +" "+d.titulo +" "+d.areaTrabajo +" "+d.sexo + "\n";
+                });
+
+                guardarArchivoDeTexto(texto, "reporteDoctores.txt");
+
+            }catch(e){
+                alert("Campos obligatorios vacíos")
+                console.log(e);
+            }
+        }; 
+
+        const guardarArchivoDeTexto = (contenido, nombre) => {
+            const a = document.createElement("a");
+            const archivo = new Blob([contenido], { type: 'text/plain' });
+            const url = URL.createObjectURL(archivo);
+            a.href = url;
+            a.download = nombre;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+    </script>
+
+{% endblock  %}

@@ -1,0 +1,85 @@
+{% extends 'layout/default.html' %}
+
+{% block content %}
+
+<div class="container-fluid p-5">
+    <div class="container-fluid d-flex">
+
+        <form method="post" name="formulario" class="me-auto w-100">
+            {% csrf_token %}
+            <select class="form-select pt-2 pb-2" name="permiso" id="selectPermiso">
+                <option selected value="">Agregar permiso</option>
+                {% for p in permisos  %}
+                    <option value="{{p.name}}">{{p.name}}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <div class="d-flex ms-2">
+            <button id="btn_add" class="btn btn-primary" style="width: 150px; height: 42px;">Añadir</button>
+        </div>
+
+    </div>
+
+    <div class="container-fluid mt-4">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+              <tr>
+                <th scope="col">Permiso</th>
+                <th scope="col">Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for p in grupo  %}
+
+                    <tr>
+                        <th  class="pt-3 pb-3">{{p.name}}</th>
+                        <td  class="pt-3 pb-3">
+                            <div class="d-flex justify-content-center">
+                                <a href="{% url 'eliminar_permiso_rol' rol p.name %}"><span class="material-symbols-rounded text-dark">remove</span></a>
+                            </div>
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+        
+     
+    </div>
+    </div>
+
+    <div class="d-flex p-3">
+
+        <a class="btn btn-danger pt-2 pb-2" style="min-width: 100px;" href="{% url 'admin_roles' %}">Atras</a>
+
+    </div>
+
+</div>
+
+<script>
+
+        btn_add.addEventListener("click", ()=>{
+            if(selectPermiso.value != ""){
+                document.formulario.submit();
+            }else{
+                alert("Campos obligatorios vacíos");
+            }
+        });
+
+        window.addEventListener('load', ()=>{
+            if(error.innerHTML != ""){
+                alert(error.innerHTML);
+            }
+        });
+
+        
+
+    </script>
+
+{% endblock  %}
+
+    
+    
+

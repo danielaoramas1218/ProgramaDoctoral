@@ -1,0 +1,87 @@
+{% extends 'layout/default.html' %}
+
+    
+    {% block content %}
+
+<div class="container-fluid p-5">
+    <div class="container-fluid d-flex align-items-center">
+
+        <form method="post" name="formulario" class="d-flex">
+            {% csrf_token %}
+            <div class="mb-3 w-100">
+               <input type="text" class="form-control pt-2 pb-2 w-100" id="campo_busqueda" placeholder="Buscar por correo electrónico..." name="keywords" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary ms-2" style="width: 200px; height: 42px;">Buscar</button>
+        </form>
+
+        {% load user_tags %}
+            {% if request.user|has_perm:"myapp.add_doctor" %}
+                <a class="btn btn-primary pt-2 pb-2 me-2 ms-auto" href="{% url 'crear_doctores' %}">
+                    <div class="d-flex">
+                        <span class="material-symbols-rounded text-light me-2">person_add</span>
+                        Registrar Doctor
+                    </div>
+                </a>
+            {% endif %}
+    </div>
+    
+
+    <div class="container-fluid mt-4">
+
+        <table class="table table-borderless">
+            <thead class="table-primary">
+                <tr>
+                    <th scope="col">Nombre completo</th>
+                    <th scope="col">Correo electrónico</th>
+                    <th scope="col">CI</th>
+                    <th scope="col">Pais</th>
+                    <th scope="col">Sexo</th>
+                    <th scope="col">Casado</th>
+                    <th scope="col">Área Postgrado</th>
+                    <th scope="col">Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in doctores  %}
+
+                    <tr>
+                        <td  class="pt-3 pb-3">{{d.nombre}} {{d.apellidos}}</td>
+                        <th  class="pt-3 pb-3">{{d.email}}</th>
+                        <td  class="pt-3 pb-3">{{d.carnet}}</td>
+                        <td  class="pt-3 pb-3">{{d.pais}}</td>
+                        <td  class="pt-3 pb-3">{{d.sexo}}</td>
+                        <td  class="pt-3 pb-3">{{d.is_casado}}</td>
+                        <td  class="pt-3 pb-3">{{d.areaPosgrado}}</td>
+                        <td  class="pt-3 pb-3">
+                            <div class="d-flex justify-content-center">             
+                                {% if request.user|has_perm:"myapp.change_doctor" %}
+                                    <a href="{% url 'editar_doctores' d.id %}"><span class="material-symbols-rounded text-dark me-2">edit</span></a>
+                                {% endif %}
+                                {% if request.user|has_perm:"myapp.delete_doctor" %}
+                                    <a onclick="eliminar(event, '{% url 'eliminar_doctores' d.id %}');" href="{% url 'eliminar_doctores' d.id %}"><span class="material-symbols-rounded text-dark me-2">delete</span></a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+        
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    eliminar= (event, url)=>{
+        event.preventDefault();
+        if(confirm('¿Está seguro que desea eliminar este Doctor?')){
+            window.location = url;
+        }
+    };
+
+</script>
+
+{% endblock  %}
